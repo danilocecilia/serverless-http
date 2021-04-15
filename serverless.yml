@@ -1,0 +1,38 @@
+service: serverless-http
+
+provider: 
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: ca-central-1
+  memorySize: 256
+
+functions:
+  getBooks:
+    handler: handler.getBooks
+    events:
+      - http:
+          path: /books
+          method: get
+          cors: true
+
+plugins: 
+  - serverless-domain-manager
+  - serverless-webpack
+  - serverless-offline
+
+package:
+  individually: true
+
+custom: 
+  stage: ${opt:stage, self:provider.stage}
+  domains:
+    dev: api.danilocecilia.com
+  webpack:
+    includeModules: true
+
+  customDomain:
+    domainName: api.danilocecilia.com
+    basePath: ''
+    stage: '${self:custom.stage}'
+    createRoute53Record: true
